@@ -2,12 +2,13 @@
 #  --------
 #  Python client for SugarCRM API.
 #
-#  Author:  ryanss <ryanssdev@icloud.com>
-#  Website: https://github.com/ryanss/sugarcrm
+#  Authors:  Festum <festum@g.pl>
+#  Website: https://github.com/Festum/sugarcrm
+#  Forked: https://github.com/ryanss/sugarcrm
 #  License: MIT (see LICENSE file)
-#  Version: 0.1.2 (February 4, 2016)
+#  Version: 0.1.3 (Oct 22, 2017)
 
-__version__ = '0.1.2'
+__version__ = '0.1.3'
 
 
 import base64
@@ -15,12 +16,10 @@ import hashlib
 import json
 import os
 import sys
-
 import requests
 
 
 class Session:
-
     def __init__(self, url, username, password, app="Python", lang="en_us",
                  verify=True):
         self.url = url
@@ -141,8 +140,21 @@ class Session:
     def get_modified_relationships(self):
         raise SugarError("Method not implemented yet.")
 
-    def get_module_fields(self):
-        raise SugarError("Method not implemented yet.")
+    def get_module_fields(self, q, fields=(), get_structure=False):
+        """Returns a list of fields as String List"""
+        data = [self.session_id, q.module, fields]
+        field_list = self._request('get_module_fields', data)
+        if get_structure:
+            field_data_structure_list = []
+            for item in field_list:
+                if item == "module_fields":
+                    for i in field_list[item]:
+                        field_data_structure_list.append(field_list[item][i])
+            return field_data_structure_list
+        else:
+            if field_list['module_fields']:
+                return [field for field in field_list['module_fields']]
+            return []
 
     def get_module_fields_md5(self):
         raise SugarError("Method not implemented yet.")
@@ -229,8 +241,15 @@ class Session:
             data = [self.session_id, fields]
             return self._request('set_document_revision', data)
 
-    def set_entries(self):
-        raise SugarError("Method not implemented yet.")
+    def set_entries(self, obj_list):
+        """Creates or updates a batch of objects."""
+        if not isinstance(obj_list, list):
+            obj_list = [obj_list, ]
+        data = [self.session_id, obj_list[0].module, [obj.fields for obj in obj_list]]
+        result = self._request('set_entries', data)
+        for i, obj_id in enumerate(result['ids']):
+            obj_list[i].id = obj_id
+        return obj_list
 
     def set_entry(self, obj):
         """Creates or updates a specific object."""
@@ -240,7 +259,7 @@ class Session:
         return obj
 
     def set_note_attachment(self, note, f):
-        """Creates an attachmentand associates it to a specific note object."""
+        """Creates an attachment and associates it to a specific note object."""
         if isinstance(f, str) or isinstance(f, unicode):
             f = open(f, 'rb')
         fields = {
@@ -274,7 +293,6 @@ class Session:
 
 
 class SugarObject:
-
     def __init__(self, **kwargs):
         for key, value in kwargs.items():
             setattr(self, key, value)
@@ -286,9 +304,10 @@ class SugarObject:
                     pass
 
     @property
-    def fields(self):
+    def fields(self, json_obj = {}):
+        item_obj = json_obj if len(json_obj) else self.__dict__
         params = []
-        for key, value in self.__dict__.items():
+        for key, value in item_obj.items():
             if not value:
                 continue
             params.append({

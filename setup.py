@@ -2,10 +2,11 @@
 #  --------
 #  Python client for SugarCRM API.
 #
-#  Author:  ryanss <ryanssdev@icloud.com>
-#  Website: https://github.com/ryanss/sugarcrm
+#  Authors:  Festum <festum@g.pl>
+#  Website: https://github.com/Festum/sugarcrm
+#  Forked: https://github.com/ryanss/sugarcrm
 #  License: MIT (see LICENSE file)
-#  Version: 0.1.2 (February 4, 2016)
+#  Version: 0.1.3 (Oct 22, 2017)
 
 
 try:
