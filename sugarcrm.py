@@ -43,6 +43,13 @@ class Session:
         raise SugarError("SugarCRM API _request returned status code %d (%s)"
                          % (r.status_code, r.reason))
 
+    def get_module_class(self, module_class = 'Leads'):
+        module_class = module_class.title()
+        class module_class(sugarcrm.SugarObject):
+            module = module_class
+            fields = {}
+        return module_class
+
     def get_available_modules(self, filter="default"):
         """Retrieves a list of available modules in the system."""
         data = [self.session_id, filter]
