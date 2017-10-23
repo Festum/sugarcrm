@@ -74,7 +74,10 @@ class Session:
         data = [self.session_id, module, id, [], relationships, track_view]
         result = self._request('get_entry', data)
         obj = SugarObject(module=module)
-        obj_data = result['entry_list'][0]['name_value_list']
+        try:
+            obj_data = result['entry_list'][0]['name_value_list']
+        except:
+            return obj
         for key in obj_data:
             if isinstance(key, dict):
                 # No object found
@@ -97,14 +100,17 @@ class Session:
         data = [self.session_id, module, ids, [], [], track_view]
         results = self._request('get_entries', data)['entry_list']
         ret = []
-        for result in results:
-            obj = SugarObject(module=module)
-            for key in result['name_value_list']:
-                if isinstance(key, dict):
-                    # No objects found
-                    return []
-                setattr(obj, key, result['name_value_list'][key]['value'])
-            ret.append(obj)
+        try:
+            for result in results:
+                obj = SugarObject(module=module)
+                for key in result['name_value_list']:
+                    if isinstance(key, dict):
+                        # No objects found
+                        return []
+                    setattr(obj, key, result['name_value_list'][key]['value'])
+                ret.append(obj)
+        except:
+            pass
         return ret
 
     def get_entries_count(self, q, deleted=False):
@@ -125,7 +131,7 @@ class Session:
         entry_list = results['entry_list']
         ret = []
         for i, result in enumerate(entry_list):
-            obj = SugarObject(module=q.module, __class__=q.__class__)
+            obj = SugarObject(module=q.module)
             for key in result['name_value_list']:
                 setattr(obj, key, result['name_value_list'][key]['value'])
             if results['relationship_list']:
