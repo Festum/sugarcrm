@@ -4,12 +4,6 @@ SugarCRM
 
 Python client for SugarCRM API.
 
-.. image:: http://img.shields.io/pypi/v/sugarcrm.svg
-    :target: https://pypi.python.org/pypi/sugarcrm
-
-.. image:: http://img.shields.io/pypi/dm/sugarcrm.svg
-    :target: https://pypi.python.org/pypi/sugarcrm
-
 .. image:: http://img.shields.io/pypi/l/sugarcrm.svg
     :target: https://github.com/ryanss/sugarcrm/blob/master/LICENSE
 
@@ -75,13 +69,7 @@ The latest stable version can always be installed or updated via pip:
 
 .. code-block:: bash
 
-    $ pip install sugarcrm
-
-If the above fails, please use easy_install instead:
-
-.. code-block:: bash
-
-    $ easy_install sugarcrm
+    $ pip install git+https://github.com/festum/sugarcrm.git
 
 
 Session Object
@@ -197,6 +185,19 @@ set_entry(sugar_object)
     session.set_entry(note)
     print note.id
 
+
+set_entries()
+    Method not implemented yet.
+
+.. code-block:: python
+
+    note = sugarcrm.Note()
+    note.name = "Test Note"
+    note.assigned_user_id = "82f72939-735e-53a2-0944-5418c4edae2a"
+    session.set_entries([note, ])
+    print note[0].id
+
+
 set_note_attachment(note, attachment)
     Creates an attachmentand associates it to a specific note object.
 
@@ -298,9 +299,6 @@ search_by_module()
     Method not implemented yet.
 
 set_campaign_merge()
-    Method not implemented yet.
-
-set_entries()
     Method not implemented yet.
 
 set_relationships()
