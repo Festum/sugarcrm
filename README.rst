@@ -5,7 +5,7 @@ SugarCRM
 Python client for SugarCRM API.
 
 .. image:: http://img.shields.io/pypi/l/sugarcrm.svg
-    :target: https://github.com/ryanss/sugarcrm/blob/master/LICENSE
+    :target: https://github.com/festum/sugarcrm/blob/master/LICENSE
 
 
 Example Usage
@@ -223,7 +223,7 @@ set_relationship(parent, child, delete=False)
 Unavailable Methods
 -------------------
 
-.. _issue: https://github.com/ryanss/sugarcrm/issues
+.. _issue: https://github.com/festum/sugarcrm/issues
 
 The following lesser-used SugarCRM API methods have not been included in this
 library yet. Please open an issue_ if you require any of these methods and I
@@ -377,21 +377,11 @@ SugarCRM Objects
     "Users"
 
 
-Development Version
--------------------
-
-The latest development version can be installed directly from GitHub:
-
-.. code-block:: bash
-
-    $ pip install --upgrade https://github.com/ryanss/sugarcrm/tarball/master
-
-
 Contributions
 -------------
 
-.. _issues: https://github.com/ryanss/sugarcrm/issues
-.. __: https://github.com/ryanss/sugarcrm/pulls
+.. _issues: https://github.com/festum/sugarcrm/issues
+.. __: https://github.com/festum/sugarcrm/pulls
 
 Issues_ and `Pull Requests`__ are always welcome.
 
@@ -399,7 +389,7 @@ Issues_ and `Pull Requests`__ are always welcome.
 License
 -------
 
-.. __: https://github.com/ryanss/sugarcrm/raw/master/LICENSE
+.. __: https://github.com/festum/sugarcrm/raw/master/LICENSE
 
 Code and documentation are available according to the MIT License
 (see LICENSE__).

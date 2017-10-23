@@ -44,8 +44,9 @@ class Session:
                          % (r.status_code, r.reason))
 
     def get_module_class(self, module_class = 'Leads'):
+        """Return custom module with Class."""
         module_class = module_class.title()
-        class module_class(sugarcrm.SugarObject):
+        class module_class(SugarObject):
             module = module_class
             fields = {}
         return module_class

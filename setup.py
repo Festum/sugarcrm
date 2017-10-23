@@ -17,10 +17,10 @@ except ImportError:
 
 setup(
     name='sugarcrm',
-    version='0.1.2',
-    author='ryanss',
-    author_email='ryanssdev@icloud.com',
-    url='https://github.com/ryanss/sugarcrm',
+    version='0.1.3',
+    author='Festum',
+    author_email='festum@g.pl',
+    url='https://github.com/Festum/sugarcrm',
     license='MIT',
     py_modules=['sugarcrm'],
     description='Python client for SugarCRM API',
