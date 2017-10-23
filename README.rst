@@ -187,7 +187,7 @@ set_entry(sugar_object)
 
 
 set_entries()
-    Method not implemented yet.
+    Creates or updates specific objects.
 
 .. code-block:: python
 
