@@ -45,22 +45,26 @@ class Session:
 
     def get_module_class(self, module_class = 'Leads'):
         """Return custom module with Class."""
-        module_class = module_class.title()
+        module_class = module_class.title() if module_class.islower() else module_class
         class module_class(SugarObject):
             module = module_class
             fields = {}
         return module_class
 
-    def get_available_modules(self, filter="default"):
+    def get_available_modules(self, filter="default", get_key=False):
         """Retrieves a list of available modules in the system."""
         data = [self.session_id, filter]
-        results = self._request('get_available_modules', data)['modules']
+        modules = self._request('get_available_modules', data)['modules']
         ret = []
-        for module in results:
-            m = Module()
-            for key, value in module.items():
-                setattr(m, key, value)
-            ret.append(m)
+        if get_key:
+            for module in modules:
+                ret.append(module['module_key'])
+        else:
+            for module in modules:
+                m = Module()
+                for key, value in module.items():
+                    setattr(m, key, value)
+                ret.append(m)
         return ret
 
     def get_document_revision(self):
