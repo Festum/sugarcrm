@@ -10,7 +10,6 @@
 
 __version__ = '0.1.3'
 
-
 import base64
 import hashlib
 import json
@@ -19,8 +18,14 @@ import sys
 import requests
 
 
-class Session:
-    def __init__(self, url, username, password, app="Python", lang="en_us",
+class Session(object):
+
+    def __init__(self,
+                 url,
+                 username,
+                 password,
+                 app="Python",
+                 lang="en_us",
                  verify=True):
         self.url = url
         self.username = username
@@ -40,15 +45,18 @@ class Session:
         r = requests.post(self.url, data=data, verify=self.verify)
         if r.status_code == 200:
             return json.loads(r.text.replace("&#039;", "'"))
-        raise SugarError("SugarCRM API _request returned status code %d (%s)"
-                         % (r.status_code, r.reason))
+        raise SugarError("SugarCRM API _request returned status code %d (%s)" %
+                         (r.status_code, r.reason))
 
-    def get_module_class(self, module_class = 'Leads'):
+    def get_module_class(self, module_class='Leads'):
         """Return custom module with Class."""
-        module_class = module_class.title() if module_class.islower() else module_class
+        module_class = module_class.title() if module_class.islower(
+        ) else module_class
+
         class module_class(SugarObject):
             module = module_class
             fields = {}
+
         return module_class
 
     def get_available_modules(self, filter="default", get_key=False):
@@ -97,24 +105,39 @@ class Session:
                     getattr(obj, m['name']).append(robj)
         return obj
 
-    def get_entries(self, module, ids, track_view=False):
+    def get_entries(self, module, ids, track_view=False, get_existed_ids=False):
         """Retrieves a list of objects based on specified object IDs."""
         if not isinstance(ids, list):
-            ids = [ids, ]
+            ids = [
+                ids,
+            ]
+        ids = list(set(ids))
         data = [self.session_id, module, ids, [], [], track_view]
         results = self._request('get_entries', data)['entry_list']
         ret = []
-        try:
-            for result in results:
-                obj = SugarObject(module=module)
-                for key in result['name_value_list']:
-                    if isinstance(key, dict):
-                        # No objects found
-                        return []
-                    setattr(obj, key, result['name_value_list'][key]['value'])
-                ret.append(obj)
-        except:
-            pass
+        if get_existed_ids:
+            deleted = []
+            try:
+                for result in results:
+                    if len(result['name_value_list']) > 2:
+                        # Will got 'Access to this object is denied since it has been deleted or does not exist'
+                        # if nv['name'] == 'deleted' and nv['value'] == '0':
+                        ret.append(result['id'])
+            except:
+                pass
+        else:
+            try:
+                for result in results:
+                    obj = SugarObject(module=module)
+                    for key in result['name_value_list']:
+                        if isinstance(key, dict):
+                            # No objects found
+                            return []
+                        setattr(obj, key,
+                                result['name_value_list'][key]['value'])
+                    ret.append(obj)
+            except:
+                pass
         return ret
 
     def get_entries_count(self, q, deleted=False):
@@ -122,15 +145,25 @@ class Session:
         data = [self.session_id, q.module, q.query, int(deleted)]
         return int(self._request('get_entries_count', data)['result_count'])
 
-    def get_entry_list(self, q, fields=(), links=dict(), order_by="",
-                       max_results=0, offset=0,
-                       deleted=False, favorites=False):
+    def get_entry_list(self,
+                       q,
+                       fields=(),
+                       links=dict(),
+                       order_by="",
+                       max_results=0,
+                       offset=0,
+                       deleted=False,
+                       favorites=False):
         """Retrieves a list of objects based on query specifications."""
         relationships = []
         for key, value in links.items():
             relationships.append({'name': key.lower(), 'value': value})
-        data = [self.session_id, q.module, q.query, order_by, offset, fields,
-                relationships, max_results, int(deleted), int(favorites)]
+        data = [
+            self.session_id, q.module, q.query, order_by, offset, fields,
+            relationships, max_results,
+            int(deleted),
+            int(favorites)
+        ]
         results = self._request('get_entry_list', data)
         entry_list = results['entry_list']
         ret = []
@@ -218,17 +251,13 @@ class Session:
 
     def login(self, username, password, app="Python", lang="en_us"):
         """Logs a user into the SugarCRM application."""
-        data = [
-            {
-                'user_name': username,
-                'password': hashlib.md5(password.encode('utf8')).hexdigest()
-            },
-            app,
-            [{
-                'name': "language",
-                'value': lang
-            }]
-        ]
+        data = [{
+            'user_name': username,
+            'password': hashlib.md5(password.encode('utf8')).hexdigest()
+        }, app, [{
+            'name': "language",
+            'value': lang
+        }]]
         return self._request('login', data)
 
     def logout(self):
@@ -262,8 +291,13 @@ class Session:
     def set_entries(self, obj_list):
         """Creates or updates a batch of objects."""
         if not isinstance(obj_list, list):
-            obj_list = [obj_list, ]
-        data = [self.session_id, obj_list[0].module, [obj.fields for obj in obj_list]]
+            obj_list = [
+                obj_list,
+            ]
+        data = [
+            self.session_id, obj_list[0].module,
+            [obj.fields for obj in obj_list]
+        ]
         result = self._request('set_entries', data)
         for i, obj_id in enumerate(result['ids']):
             obj_list[i].id = obj_id
@@ -291,13 +325,19 @@ class Session:
     def set_relationship(self, parent, child, delete=False):
         """Sets relationships between two records."""
         delete = int(delete)
-        related_ids = [child.id, ]
+        related_ids = [
+            child.id,
+        ]
         name_value_list = [{
-            'name': "%s_%s" % (parent.module.lower(), child.module.lower()),
-            'value': 'Other',
+            'name':
+            "%s_%s" % (parent.module.lower(), child.module.lower()),
+            'value':
+            'Other',
         }]
-        data = [self.session_id, parent.module, parent.id,
-                child.module.lower(), related_ids, name_value_list, delete]
+        data = [
+            self.session_id, parent.module, parent.id,
+            child.module.lower(), related_ids, name_value_list, delete
+        ]
         return self._request('set_relationship', data)
 
     def set_relationships(self):
@@ -311,6 +351,7 @@ class Session:
 
 
 class SugarObject:
+
     def __init__(self, **kwargs):
         for key, value in kwargs.items():
             setattr(self, key, value)
@@ -322,16 +363,13 @@ class SugarObject:
                     pass
 
     @property
-    def fields(self, json_obj = {}):
+    def fields(self, json_obj={}):
         item_obj = json_obj if len(json_obj) else self.__dict__
         params = []
         for key, value in item_obj.items():
             if not value:
                 continue
-            params.append({
-                'name': key,
-                'value': value
-            })
+            params.append({'name': key, 'value': value})
         return params
 
     @property
