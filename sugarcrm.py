@@ -303,6 +303,23 @@ class Session(object):
             obj_list[i].id = obj_id
         return obj_list
 
+    def set_entries_smart(self, obj_list):
+        ids = []
+        obj_id_based = {}
+        for obj in obj_list:
+            ids.append(obj['id'])
+        try:
+            exist_ids = self.get_entries(
+                obj_list[0].module, ids, get_existed_ids=True)
+        except Exception as e:
+            return {'msg': 'Failed to check records', 'reason': e}
+        for obj in obj_list:
+            if obj['id'] not in exist_ids:
+                # This key is used to create a new item with specified id. See https://goo.gl/ExkCUj
+                obj['new_with_id'] = True
+            obj_id_based[obj['id']] = obj
+        return self.set_entries(obj_list), obj_id_based
+
     def set_entry(self, obj):
         """Creates or updates a specific object."""
         data = [self.session_id, obj.module, obj.fields]
