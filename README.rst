@@ -321,9 +321,6 @@ search_by_module()
 set_campaign_merge()
     Method not implemented yet.
 
-set_relationships()
-    Method not implemented yet.
-
 snip_import_emails()
     Method not implemented yet.
 
