@@ -395,7 +395,7 @@ class Session(object):
                 })
             except:
                 pass
-        if not len(module_names):
+        if len(module_names) < 1:
             return {'status': 204, 'msg': 'nothong to do'}
         data = [
             self.session_id, module_names, module_ids, field_names, related_ids,
