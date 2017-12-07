@@ -361,11 +361,11 @@ class Session(object):
         """Sets relationships between pair of records."""
         ''' format:
         module_collection = [{
-            'name': 'MODULE_ID',
-            'id': 'MODULE_NAME',
+            'id': 'MODULE_ID',
+            'name': 'MODULE_NAME',
             'field': 'RELATED_CHILD_MODULE_NAME',
-            'items': 'RELATED_IDS'
-            'delete': True
+            'items': ['RELATED_ID']
+            'delete': False
         }, ....]
         '''
         #The name of the modules from which to relate records.
@@ -385,7 +385,7 @@ class Session(object):
                 module_names.append(col['name'])
                 module_ids.append(col['id'])
                 field_names.append(col['field'].lower())
-                delete_array.append(int(col['delete']))
+                delete_array.append(int(col.get('delete', False)))
                 name_value_list.append({
                     'name':
                     "%s_%s" % (col['name'].module.lower(),

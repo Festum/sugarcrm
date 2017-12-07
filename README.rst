@@ -219,6 +219,26 @@ set_relationship(parent, child, delete=False)
     opportunity = session.get_entry("Opportunities", "5b671886-cfe4-36f5-fa9d-5418a24e4aca")
     session.set_relationship(opportunity, doc)
 
+set_relationships(module_collection)
+    Sets relationships between pair of records.
+
+.. code-block:: python
+
+    doc1 = sugarcrm.Document(document_name="Test Doc", revision=1)
+    session.set_entry(doc1)
+    session.set_document_revision(doc1, "/path/to/test.pdf")
+    doc2 = sugarcrm.Document(document_name="Test Doc", revision=1)
+    session.set_entry(doc2)
+    session.set_document_revision(doc2, "/path/to/test.pdf")
+    module_collection = [{
+        'id': '5b671886-cfe4-36f5-fa9d-5418a24e4aca',
+        'name': 'Opportunities',
+        'field': 'documents',
+        'items': [doc1.id, doc2.id]
+        'delete': True
+    }]
+    session.set_relationship(module_collection)
+
 
 Unavailable Methods
 -------------------
