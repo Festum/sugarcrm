@@ -357,34 +357,49 @@ class Session(object):
         ]
         return self._request('set_relationship', data)
 
-    def set_relationships(self, parents, children, related_ids, delete=False):
-        """Sets relationships between two records."""
-        if len(parents) != len(children):
-            return {
-                'status': 400,
-                'msg': 'unpaired number of parents and children'
-            }
+    def set_relationships(self, module_collection):
+        """Sets relationships between pair of records."""
+        ''' format:
+        module_collection = [{
+            'name': 'MODULE_ID',
+            'id': 'MODULE_NAME',
+            'field': 'RELATED_CHILD_MODULE_NAME',
+            'items': 'RELATED_IDS'
+            'delete': True
+        }, ....]
+        '''
+        #The name of the modules from which to relate records.
+        module_names = []
+        #The IDs of the specified module beans.
+        module_ids = []
+        #The relationship names of the linked fields from which to relate records.
+        field_names = []
+        # The lists of record ids to relate
+        related_ids = []
+        # Sets the value for relationship based fields
         name_value_list = []
-        for x in range(0, len(parents)):
-            name_value_list.append({
-                'name':
-                "%s_%s" % (parents[x].module.lower(),
-                           children[x].module.lower()),
-                'value':
-                'Other'
-            })
+        # Whether or not to delete the relationships. 0:create, 1:delete
+        delete_array = []
+        for col in module_collection:
+            try:
+                module_names.append(col['name'])
+                module_ids.append(col['id'])
+                field_names.append(col['field'].lower())
+                delete_array.append(int(col['delete']))
+                name_value_list.append({
+                    'name':
+                    "%s_%s" % (col['name'].module.lower(),
+                               col['field'].module.lower()),
+                    'value':
+                    'Other'
+                })
+            except:
+                pass
+        if not len(module_names):
+            return {'status': 204, 'msg': 'nothong to do'}
         data = [
-            self.session_id,
-            [(parent.module for parent in parents)
-            ],  #The name of the modules from which to relate records.
-            [(parent.id for parent in parents)
-            ],  #The IDs of the specified module beans.
-            children.module.lower(
-            ),  #The relationship names of the linked fields from which to relate records.
-            related_ids,  # The lists of record ids to relate
-            name_value_list,  # Sets the value for relationship based fields
-            [int(delete) for x in range(0, len(parents))
-            ]  # Whether or not to delete the relationships. 0:create, 1:delete
+            self.session_id, module_names, module_ids, field_names, related_ids,
+            name_value_list, delete_array
         ]
         return self._request('set_relationships', data)
 
