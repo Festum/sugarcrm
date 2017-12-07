@@ -340,7 +340,7 @@ class Session(object):
         return self._request('set_note_attachment', data)
 
     def set_relationship(self, parent, child, delete=False):
-        """Sets relationships between two records."""
+        """Sets relationship between two records."""
         delete = int(delete)
         related_ids = [
             child.id,
@@ -357,8 +357,36 @@ class Session(object):
         ]
         return self._request('set_relationship', data)
 
-    def set_relationships(self):
-        raise SugarError("Method not implemented yet.")
+    def set_relationships(self, parents, children, related_ids, delete=False):
+        """Sets relationships between two records."""
+        if len(parents) != len(children):
+            return {
+                'status': 400,
+                'msg': 'unpaired number of parents and children'
+            }
+        name_value_list = []
+        for x in range(0, len(parents)):
+            name_value_list.append({
+                'name':
+                "%s_%s" % (parents[x].module.lower(),
+                           children[x].module.lower()),
+                'value':
+                'Other'
+            })
+        data = [
+            self.session_id,
+            [(parent.module for parent in parents)
+            ],  #The name of the modules from which to relate records.
+            [(parent.id for parent in parents)
+            ],  #The IDs of the specified module beans.
+            children.module.lower(
+            ),  #The relationship names of the linked fields from which to relate records.
+            related_ids,  # The lists of record ids to relate
+            name_value_list,  # Sets the value for relationship based fields
+            [int(delete) for x in range(0, len(parents))
+            ]  # Whether or not to delete the relationships. 0:create, 1:delete
+        ]
+        return self._request('set_relationships', data)
 
     def snip_import_emails(self):
         raise SugarError("Method not implemented yet.")
