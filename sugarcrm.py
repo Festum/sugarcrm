@@ -391,7 +391,7 @@ class Session(object):
             try:
                 module_names.append(col['table'][0])
                 for pk, fks in col['map'].viewitems():
-                    module_ids.append(col['id'])
+                    module_ids.append(pk)
                     related_ids.append(fks)
                 field_names.append(col['table'][1].lower())
                 delete_array.append(int(col.get('delete', False)))
