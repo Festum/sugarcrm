@@ -365,13 +365,11 @@ class Session(object):
                 'PARENT_MODULE_NAME',
                 'RELATED_CHILD_MODULE_NAME'
             ],
-            'map': [
-                {
-                    'PARENT_ITEM_ID': [
-                        'RELATED_ID'
-                    ]
-                }
-            ]
+            'map': {
+                'PARENT_ITEM_ID': [
+                    'RELATED_ID'
+                ]
+            }
             'delete': False
         }, ....]
         '''

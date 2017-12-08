@@ -235,14 +235,12 @@ set_relationships(module_collection)
             'Opportunities',
             'documents'
         ],
-        'map': [
-            {
-                '5b671886-cfe4-36f5-fa9d-5418a24e4aca':[
-                    doc1.id, 
-                    doc2.id
-                ]
-            }
-        ]
+        'map': {
+            '5b671886-cfe4-36f5-fa9d-5418a24e4aca':[
+                doc1.id, 
+                doc2.id
+            ]
+        }
         'delete': True
     }]
     session.set_relationship(module_collection)
