@@ -361,10 +361,17 @@ class Session(object):
         """Sets relationships between pair of records."""
         ''' format:
         module_collection = [{
-            'id': 'MODULE_ID',
-            'name': 'MODULE_NAME',
-            'field': 'RELATED_CHILD_MODULE_NAME',
-            'items': ['RELATED_ID']
+            'table': [
+                'PARENT_MODULE_NAME',
+                'RELATED_CHILD_MODULE_NAME'
+            ],
+            'map': [
+                {
+                    'PARENT_ITEM_ID': [
+                        'RELATED_ID'
+                    ]
+                }
+            ]
             'delete': False
         }, ....]
         '''
@@ -382,14 +389,16 @@ class Session(object):
         delete_array = []
         for col in module_collection:
             try:
-                module_names.append(col['name'])
-                module_ids.append(col['id'])
-                field_names.append(col['field'].lower())
+                module_names.append(col['table'][0])
+                for pk, fks in col['map'].viewitems():
+                    module_ids.append(col['id'])
+                    related_ids.append(fks)
+                field_names.append(col['table'][1].lower())
                 delete_array.append(int(col.get('delete', False)))
                 name_value_list.append({
                     'name':
-                    "%s_%s" % (col['name'].module.lower(),
-                               col['field'].module.lower()),
+                    "%s_%s" % (col['table'][0].module.lower(),
+                               col['table'][1].module.lower()),
                     'value':
                     'Other'
                 })
@@ -397,6 +406,8 @@ class Session(object):
                 pass
         if len(module_names) < 1:
             return {'status': 204, 'msg': 'nothong to do'}
+        if len(module_names) != len(module_ids) or len(module_names) != len(related_ids):
+            return {'status': 400, 'msg': 'invalid input numbers'}
         data = [
             self.session_id, module_names, module_ids, field_names, related_ids,
             name_value_list, delete_array

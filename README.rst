@@ -231,10 +231,18 @@ set_relationships(module_collection)
     session.set_entry(doc2)
     session.set_document_revision(doc2, "/path/to/test.pdf")
     module_collection = [{
-        'id': '5b671886-cfe4-36f5-fa9d-5418a24e4aca',
-        'name': 'Opportunities',
-        'field': 'documents',
-        'items': [doc1.id, doc2.id]
+        'table': [
+            'Opportunities',
+            'documents'
+        ],
+        'map': [
+            {
+                '5b671886-cfe4-36f5-fa9d-5418a24e4aca':[
+                    doc1.id, 
+                    doc2.id
+                ]
+            }
+        ]
         'delete': True
     }]
     session.set_relationship(module_collection)
