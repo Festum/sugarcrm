@@ -219,13 +219,16 @@ class Session(object):
     def get_quotes_pdf(self):
         raise SugarError("Method not implemented yet.")
 
-    def get_relationships(self, module_names, module_id, link_field_name, related_fields, related_module_link_name_to_fields_array):
+    def get_relationships(self, module_names, module_id, link_field_name,
+                          related_fields,
+                          related_module_link_name_to_fields_array, limit):
         """Retrieves a specific relationship link for a specified record."""
         related_module_query = ' {}.name IS NOT NULL '.format(link_field_name)
         order_by = ' {}.name'.format(link_field_name)
         data = [
-            self.session_id, module_names, module_id, link_field_name, related_module_query,
-            related_fields, related_module_link_name_to_fields_array, 1, order_by, 0, limit
+            self.session_id, module_names, module_id, link_field_name,
+            related_module_query, related_fields,
+            related_module_link_name_to_fields_array, 1, order_by, 0, limit
         ]
         return self._request('get_relationships', data)
 
@@ -412,7 +415,8 @@ class Session(object):
                 pass
         if len(module_names) < 1:
             return {'status': 204, 'msg': 'nothong to do'}
-        if len(module_names) != len(module_ids) or len(module_names) != len(related_ids):
+        if len(module_names) != len(module_ids) or len(module_names) != len(
+                related_ids):
             return {'status': 400, 'msg': 'invalid input numbers'}
         data = [
             self.session_id, module_names, module_ids, field_names, related_ids,
