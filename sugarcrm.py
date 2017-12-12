@@ -6,9 +6,9 @@
 #  Website: https://github.com/Festum/sugarcrm
 #  Forked: https://github.com/ryanss/sugarcrm
 #  License: MIT (see LICENSE file)
-#  Version: 0.1.3 (Oct 22, 2017)
+#  Version: 0.1.4 (Dec 12, 2017)
 
-__version__ = '0.1.3'
+__version__ = '0.1.4'
 
 import base64
 import hashlib
@@ -219,8 +219,15 @@ class Session(object):
     def get_quotes_pdf(self):
         raise SugarError("Method not implemented yet.")
 
-    def get_relationships(self):
-        raise SugarError("Method not implemented yet.")
+    def get_relationships(self, module_names, module_id, link_field_name, related_fields, related_module_link_name_to_fields_array):
+        """Retrieves a specific relationship link for a specified record."""
+        related_module_query = ' {}.name IS NOT NULL '.format(link_field_name)
+        order_by = ' {}.name'.format(link_field_name)
+        data = [
+            self.session_id, module_names, module_id, link_field_name, related_module_query,
+            related_fields, related_module_link_name_to_fields_array, 1, order_by, 0, limit
+        ]
+        return self._request('get_relationships', data)
 
     def get_report_entries(self):
         raise SugarError("Method not implemented yet.")
@@ -359,7 +366,8 @@ class Session(object):
 
     def set_relationships(self, module_collection):
         """Sets relationships between pair of records."""
-        ''' format:
+        '''
+        format:
         module_collection = [{
             'table': [
                 'PARENT_MODULE_NAME',
@@ -391,12 +399,12 @@ class Session(object):
                 for pk, fks in col['map'].viewitems():
                     module_ids.append(pk)
                     related_ids.append(fks)
-                field_names.append(col['table'][1].lower())
+                field_names.append(col['table'][1])
                 delete_array.append(int(col.get('delete', False)))
                 name_value_list.append({
                     'name':
-                    "%s_%s" % (col['table'][0].module.lower(),
-                               col['table'][1].module.lower()),
+                    "%s_%s" % (col['table'][0].lower(),
+                               col['table'][1].lower()),
                     'value':
                     'Other'
                 })
