@@ -386,37 +386,41 @@ class Session(object):
         '''
         #The name of the modules from which to relate records.
         module_names = []
+
         #The IDs of the specified module beans.
         module_ids = []
-        #The relationship names of the linked fields from which to relate records.
+
+        #The relationship names of the linked fields from which to relate records. It's a fill in relationship panel.
         field_names = []
-        # The lists of record ids to relate
+
+        # The lists of record ids to relate. Child ids.
         related_ids = []
-        # Sets the value for relationship based fields
+
+        # Sets the value for relationship based fields.
+        # Sometimes setting this wrong will cause 500 error on $relFields = $mod->$link_field_name->getRelatedFields();
         name_value_list = []
+
         # Whether or not to delete the relationships. 0:create, 1:delete
         delete_array = []
+
         for col in module_collection:
             try:
                 module_names.append(col['table'][0])
                 for pk, fks in col['map'].viewitems():
                     module_ids.append(pk)
                     related_ids.append(fks)
-                field_names.append(col['table'][1])
+                field_name = '%s_%s' % (col['table'][0].lower(),col['table'][1].lower())
+                field_names.append(field_name)
                 delete_array.append(int(col.get('delete', False)))
-                name_value_list.append({
-                    'name':
-                    "%s_%s" % (col['table'][0].lower(),
-                               col['table'][1].lower()),
-                    'value':
-                    'Other'
-                })
+                name_value_list.append([{
+                    'name': field_name,
+                    'value': 'Other'
+                }])
             except:
                 pass
         if len(module_names) < 1:
             return {'status': 204, 'msg': 'nothong to do'}
-        if len(module_names) != len(module_ids) or len(module_names) != len(
-                related_ids):
+        if len(module_names) != len(module_ids) or len(module_names) != len(related_ids):
             return {'status': 400, 'msg': 'invalid input numbers'}
         data = [
             self.session_id, module_names, module_ids, field_names, related_ids,
